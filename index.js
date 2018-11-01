@@ -7,9 +7,7 @@ const socketIo = require("socket.io", {
 })
 const axios = require("axios");
 const port = process.env.PORT || 4001;
-const index = require("./routes/index");
 const app = express();
-app.use(index);
 const server = http.createServer(app);
 const io = socketIo(server); 
 
@@ -188,9 +186,9 @@ const disconnect = async (socket, store) => {
   }
 };
 
-app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+app.use(express.static(path.resolve(__dirname, '../socket-io-client/build')));
 app.get('*', function(request, response) {
-  response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
+  response.sendFile(path.resolve(__dirname, '../socket-io-client/build', 'index.html'));
 });
 
 io.on("connection", socket => {
