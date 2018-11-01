@@ -142,7 +142,9 @@ const findLastWaiting = (games) => {
 }
 
 const join = async socket => {
+  console.log("joining")
   try {
+    
     const { games } = gameStore
     const isEmpty = !(io.sockets.adapter.rooms[gameStore.getGameName()])
   
@@ -169,7 +171,8 @@ const message = async data => {
 }
 
 const playPresses = async (data, socket) => {
-  await socket.emit("otherPresses", data)
+  //  find out how to isolate room
+  await socket.broadcast.emit("otherPresses", data)
 }
 
 const disconnect = async (socket, store) => {
@@ -180,6 +183,16 @@ const disconnect = async (socket, store) => {
     console.error(`Error: ${error.code}`);
   }
 };
+
+app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+app.get('*', function(request, response) {
+  response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
+});
+
+io.configure(() => {  
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
 
 io.on("connection", socket => {
   let store = new DataStore(io)

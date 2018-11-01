@@ -1,37 +1,75 @@
 import React, { Component } from "react";
-import { socket, join, sendMessage, playPresses, sendPresses } from "./subscribe"
+import { join, playPresses, sendPresses } from "./subscribe"
+import './App.css'
+
 class App extends Component {
   constructor() {
     super();
     this.state = {
       response: false,
-      greeting: '',
-      timestamp: '',
-      letters: ['h','e','l','l','o'],
-      presses: [],
+      letterButtons: [
+        {
+          letter: 'h',
+          displayClass: false
+        },
+        {
+          letter: 'e',
+          displayClass: false
+        },
+        {
+          letter: 'l',
+          displayClass: false
+        },
+        {
+          letter: 'l',
+          displayClass: false
+        },
+        {
+          letter: 'o',
+          displayClass: false
+        }
+      ],
       playerPresses: []
     };
-    // set state in constructor
-    // playPresses((err, presses) => this.setState({presses}))
   }
 
   componentDidMount() {
-    // join event occuring on compDidMount
     join((err, response) => this.setState({response}))
-    // playPresses((err, presses) => this.setState({presses}))
+    playPresses((err, presses) => {
+      this.pressButtons(presses)
+    })
   }
 
-  pressButtons(presses) {
-    const pressesMock = (e, i) => {
-      return setTimeout(function() {
-        document.getElementById(`btn-${e}`).style.backgroundColor = 'red'
-      }, (500 * i));
-    }
-    presses.forEach((e, i) =>  pressesMock(e, i));
+  pressButtons = (presses) => {
+    const { letterButtons } = this.state
+    const runButtons = new Promise((resolve, reject) => {
+      try {
+        let complete = 0
+        presses.forEach((l, i) => {
+          const time = 500 * i
+          complete += time
+          setTimeout(() => {
+            letterButtons[l].displayClass = true
+            this.setState({
+              letterButtons
+            })
+          }, time);
+        })
+        resolve(complete)
+      } catch (error) {
+        resolve(error)
+      }
+    })
+
+    runButtons.then((d) => {
+      setTimeout(() => {
+        this.onReset()
+      }, d)
+    })
   }
 
   onClick = () => {
-    console.log(this.state.presses)
+    console.log(this.state.playerPresses)
   }
 
   letterClick = (i) => {
@@ -41,9 +79,19 @@ class App extends Component {
   }
 
   sendPresses = async () => {
-    const { playerPresses } = this.state
+    let { playerPresses } = this.state
     await sendPresses(playerPresses)
-    await playPresses((err, presses) => this.pressButtons(presses))
+    playerPresses = []
+    this.setState({playerPresses})
+  }
+
+  onReset = () => {
+    let { letterButtons } = this.state
+    letterButtons = letterButtons.map((l, i) => {
+      l.displayClass = false
+      return l
+    })
+    this.setState({letterButtons})
   }
 
   render() {
@@ -60,15 +108,17 @@ class App extends Component {
         <p>{this.state.greeting}</p>
         <button onClick={this.onClick} >Start Play</button>
         <button onClick={this.sendPresses}>Send Presses</button>
+        <button onClick={this.onReset}>Reset</button>
         <div style={{ display : 'flex', justifyContent: 'center'}}>
-          {this.state.letters.map( (l, i) => 
+          {this.state.letterButtons.map( (l, i) => 
             <button 
-              key={`btn-${i}`}
+              key={`${l.letter}-${i}`}
               id={`btn-${i}`}
+              className={l.displayClass ? 'press' : 'no-press'}
               onClick={() => this.letterClick(i)}
               style={{width: '30%', height: '85px'}} 
             > 
-              {l.toUpperCase()} 
+              {l.letter.toUpperCase()} 
             </button> 
           )}
         </div>  
