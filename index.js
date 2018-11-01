@@ -174,6 +174,7 @@ const message = async data => {
 
 const playPresses = async (data, socket) => {
   //  find out how to isolate room
+  console.log("play presses")
   await socket.broadcast.emit("otherPresses", data)
 }
 

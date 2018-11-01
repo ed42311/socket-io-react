@@ -80,6 +80,7 @@ class App extends Component {
 
   sendPresses = async () => {
     let { playerPresses } = this.state
+    console.log(playerPresses)
     await sendPresses(playerPresses)
     playerPresses = []
     this.setState({playerPresses})
