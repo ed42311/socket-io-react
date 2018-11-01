@@ -1,7 +1,10 @@
 const express = require("express");
 const http = require("http");
 const path = require("path");
-const socketIo = require("socket.io");
+const socketIo = require("socket.io", {
+  transports  : [ 'xhr-polling' ],
+  'polling duration' : 10
+})
 const axios = require("axios");
 const port = process.env.PORT || 4001;
 const index = require("./routes/index");
@@ -188,11 +191,6 @@ const disconnect = async (socket, store) => {
 app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 app.get('*', function(request, response) {
   response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
-});
-
-io.configure(() => {  
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
 });
 
 io.on("connection", socket => {
