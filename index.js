@@ -186,9 +186,9 @@ const disconnect = async (socket, store) => {
   }
 };
 
-app.use(express.static(path.resolve(__dirname, '../socket-io-client/build')));
+app.use(express.static(path.resolve(__dirname, './socket-io-client/build')));
 app.get('*', function(request, response) {
-  response.sendFile(path.resolve(__dirname, '../socket-io-client/build', 'index.html'));
+  response.sendFile(path.resolve(__dirname, './socket-io-client/build', 'index.html'));
 });
 
 io.on("connection", socket => {
