@@ -41,6 +41,7 @@ class App extends Component {
   }
 
   pressButtons = (presses) => {
+    console.log("press buttons")
     const { letterButtons } = this.state
     const runButtons = new Promise((resolve, reject) => {
       try {
@@ -66,6 +67,7 @@ class App extends Component {
         this.onReset()
       }, d)
     })
+    console.log("end press buttons")
   }
 
   onClick = () => {

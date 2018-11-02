@@ -10,10 +10,12 @@ function join(cb) {
 }
 
 function playPresses(cb) {
+  console.log("play presses socket")
   socket.on('otherPresses', data => cb(null, data));
 }
 
 function sendPresses(data) {
+  console.log("send presses")
   socket.emit('presses', data);
 }
 
